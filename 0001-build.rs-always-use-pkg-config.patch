@@ -1,0 +1,38 @@
+From d7c41e08d5fbe2b3e387ce363da71dd91f1db346 Mon Sep 17 00:00:00 2001
+From: Igor Gnatenko <i.gnatenko.brain@gmail.com>
+Date: Sun, 26 Nov 2017 12:22:51 +0100
+Subject: [PATCH] build.rs: always use pkg-config
+
+Signed-off-by: Igor Gnatenko <i.gnatenko.brain@gmail.com>
+Signed-off-by: Josh Stone <jistone@redhat.com>
+---
+ libgit2-sys/build.rs | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/libgit2-sys/build.rs b/libgit2-sys/build.rs
+index 4586d56..3c531ef 100644
+--- a/libgit2-sys/build.rs
++++ b/libgit2-sys/build.rs
+@@ -7,14 +7,12 @@ fn main() {
+     let https = env::var("CARGO_FEATURE_HTTPS").is_ok();
+     let ssh = env::var("CARGO_FEATURE_SSH").is_ok();
+ 
+-    if env::var("LIBGIT2_SYS_USE_PKG_CONFIG").is_ok() {
+-        let mut cfg = pkg_config::Config::new();
+-        if let Ok(lib) = cfg.atleast_version("0.28.0").probe("libgit2") {
+-            for include in &lib.include_paths {
+-                println!("cargo:root={}", include.display());
+-            }
+-            return;
++    let mut cfg = pkg_config::Config::new();
++    if let Ok(lib) = cfg.atleast_version("0.28.0").probe("libgit2") {
++        for include in &lib.include_paths {
++            println!("cargo:root={}", include.display());
+         }
++        return;
+     }
+ 
+     if !Path::new("libgit2/.git").exists() {
+-- 
+2.22.0
+
